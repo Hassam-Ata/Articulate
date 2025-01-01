@@ -9,18 +9,11 @@ import cors from "cors";
 
 const app = express();
 const PORT = process.env.port || 5000;
-const CLIENT_URL =
-  process.env.CLIENT_URL || "https://articulate-client.vercel.app";
+// const CLIENT_URL =
+//   process.env.CLIENT_URL || "https://articulate-client.vercel.app";
 
 // Configure CORS
-app.use(
-  cors({
-    origin: CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // If you need cookies or auth headers
-  })
-);
+app.use(cors());
 
 app.use(clerkMiddleware());
 app.use(express.json());
