@@ -9,46 +9,56 @@ import cors from "cors";
 
 const app = express();
 
-// Move express.json() before CORS middleware
+app.use(cors(process.env.CLIENT_URL));
+app.use(clerkMiddleware());
+app.use("/webhooks", webhookRouter);
 app.use(express.json());
 
-// Configure CORS with more specific options
-app.use(
-  cors({
-    origin:
-      "https://articulate-client-git-master-hassam-atas-projects.vercel.app",
-    credentials: true, // Allow credentials
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Include OPTIONS
-    allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
-    exposedHeaders: ["Content-Range", "X-Content-Range"],
-  })
-);
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
-// Add preflight handling for complex requests
-app.options("*", cors()); // Enable pre-flight for all routes
+// app.get("/test",(req,res)=>{
+//   res.status(200).send("it works!")
+// })
 
-// Then add your Clerk middleware
-app.use(clerkMiddleware());
+// app.get("/auth-state", (req, res) => {
+//   const authState = req.auth;
+//   res.json(authState);
+// });
 
-// Routes
-app.use("/webhooks", webhookRouter);
+// app.get("/protect", (req, res) => {
+//   const {userId} = req.auth;
+//   if(!userId){
+//     return res.status(401).json("not authenticated")
+//   }
+//   res.status(200).json("content")
+// });
+
+// app.get("/protect2", requireAuth(), (req, res) => {
+//   res.status(200).json("content")
+// });
+
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/comments", commentRouter);
 
-// Error handling middleware
 app.use((error, req, res, next) => {
-  res.status(error.status || 500).json({
+  res.status(error.status || 500);
+
+  res.json({
     message: error.message || "Something went wrong!",
     status: error.status,
     stack: error.stack,
   });
 });
 
-const PORT = process.env.PORT || 5000; // Fix: 'PORT' should be uppercase
-
-// Start server
-app.listen(PORT, () => {
+app.listen(3000, () => {
   connectDB();
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server is running!");
 });
