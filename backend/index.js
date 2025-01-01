@@ -14,6 +14,11 @@ const PORT = process.env.port || 5000;
 
 // Configure CORS
 app.use(cors());
+app.use(
+  cors({
+    origin: "https://articulate-client.vercel.app",
+  })
+);
 
 app.use(clerkMiddleware());
 app.use(express.json());
