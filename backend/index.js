@@ -10,16 +10,15 @@ import cors from "cors";
 const app = express();
 
 // Manually set CORS headers
-app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://articulate-client.vercel.app"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  next();
-});
+app.use(
+  cors({
+    origin: "https://articulate-client.vercel.app", // Allow only your client's origin
+    // or
+    // origin: true, // Allow all origins (less secure, use with caution)
+    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+  })
+);
 
 const PORT = process.env.port || 5000;
 
