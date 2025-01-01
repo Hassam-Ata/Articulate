@@ -9,21 +9,25 @@ import cors from "cors";
 
 const app = express();
 
-// Manually set CORS headers
+// Move express.json() before CORS middleware
+app.use(express.json());
+
+// Configure CORS with more specific options
 app.use(
   cors({
-    origin: "https://articulate-client.vercel.app", // Allow only your client's origin
-    // or
-    // origin: true, // Allow all origins (less secure, use with caution)
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+    origin: "https://articulate-client.vercel.app",
+    credentials: true, // Allow credentials
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Include OPTIONS
+    allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
+    exposedHeaders: ["Content-Range", "X-Content-Range"],
   })
 );
 
-const PORT = process.env.port || 5000;
+// Add preflight handling for complex requests
+app.options("*", cors()); // Enable pre-flight for all routes
 
+// Then add your Clerk middleware
 app.use(clerkMiddleware());
-app.use(express.json());
 
 // Routes
 app.use("/webhooks", webhookRouter);
@@ -39,6 +43,8 @@ app.use((error, req, res, next) => {
     stack: error.stack,
   });
 });
+
+const PORT = process.env.PORT || 5000; // Fix: 'PORT' should be uppercase
 
 // Start server
 app.listen(PORT, () => {
