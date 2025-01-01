@@ -15,7 +15,8 @@ app.use(express.json());
 // Configure CORS with more specific options
 app.use(
   cors({
-    origin: "https://articulate-client.vercel.app",
+    origin:
+      "https://articulate-client-git-master-hassam-atas-projects.vercel.app",
     credentials: true, // Allow credentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Include OPTIONS
     allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
