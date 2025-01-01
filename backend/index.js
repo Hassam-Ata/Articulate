@@ -9,41 +9,47 @@ import cors from "cors";
 
 const app = express();
 
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://articulate-client.vercel.app"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.status(200).json({
+      body: "OK",
+    });
+  }
+
+  next();
+});
+
+// Then your existing CORS middleware
+app.use(
+  cors({
+    origin: "https://articulate-client.vercel.app",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+    ],
+  })
+);
 app.use(cors(process.env.CLIENT_URL));
 app.use(clerkMiddleware());
 app.use("/webhooks", webhookRouter);
 app.use(express.json());
-
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
-
-// app.get("/test",(req,res)=>{
-//   res.status(200).send("it works!")
-// })
-
-// app.get("/auth-state", (req, res) => {
-//   const authState = req.auth;
-//   res.json(authState);
-// });
-
-// app.get("/protect", (req, res) => {
-//   const {userId} = req.auth;
-//   if(!userId){
-//     return res.status(401).json("not authenticated")
-//   }
-//   res.status(200).json("content")
-// });
-
-// app.get("/protect2", requireAuth(), (req, res) => {
-//   res.status(200).json("content")
-// });
-
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/comments", commentRouter);
