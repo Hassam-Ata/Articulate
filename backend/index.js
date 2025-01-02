@@ -39,7 +39,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   connectDB();
   console.log("Server is running!");
 });
